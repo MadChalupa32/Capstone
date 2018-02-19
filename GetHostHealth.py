@@ -1,8 +1,6 @@
 from __future__ import print_function
 
-import atexit
 import re
-import ssl
 
 import humanize
 import pyVmomi
@@ -17,12 +15,13 @@ def get_host_info(host):
         Host_name = host.name
         TotalMemoryUsage = str(float(host.summary.quickStats.overallMemoryUsage / 1024))
         TotalCpuUsage = str(host.summary.quickStats.overallCpuUsage)
+        Color = str(host.summary.overallStatus)
 
         Memory = humanize.naturalsize(host.hardware.memorySize,binary=True)
         Temp = re.findall("\d+\.\d+", Memory)
         MemoryCapacity = str(' '.join(str(p) for p in Temp))
 
-        OUTPUT.append("Host " + Host_name + "'s CPU is running at " + TotalCpuUsage + " MegaHertZ and is using " + TotalMemoryUsage + " out of " + MemoryCapacity + " gigabytes of memory")
+        OUTPUT.append("Host " + Host_name + " is " + Color + "with CPU running at " + TotalCpuUsage + " MegaHertZ and is using " + TotalMemoryUsage + " out of " + MemoryCapacity + " gigabytes of memory")
         # print(OUTPUT)
     
     except Exception as error:

@@ -1,9 +1,5 @@
 from __future__ import print_function
 
-import argparse
-import atexit
-import getpass
-import ssl
 import sys
 
 from pyVmomi import vim, vmodl
@@ -11,12 +7,20 @@ from pyVmomi import vim, vmodl
 import Connect
 import VMtoList
 
-vm_name = ""
+vm_name = "boots"
 OUTPUT = []
 
 def get_status(ObjList):
+
+      vmlist = []
       for vm in ObjList:
-            if vm.name in vm_name:
+            vmlist.append(vm.name)
+
+      for vm in ObjList:
+            if not vm_name in vmlist:
+                  OUTPUT.append(vm_name + " is not an active Virtual Machine")
+                  break
+            elif vm.name in vm_name:
                   if(vm.summary.runtime.powerState == "poweredOn"):
                         vm.PowerOff()
                         OUTPUT.append("The virtual machine " + vm_name + " has been powered off successfully")
@@ -34,9 +38,8 @@ def main():
 
       if not len(vm_list):
             OUTPUT.append("No virtual machines available for power off")
-            #print("No virtual machines available for power off")
-            sys.exit()
-
+            print("No virtual machines available for power off")
+            
       si = Connect.ESXiConnect()
       content = si.RetrieveContent()
       objView = content.viewManager.CreateContainerView(content.rootFolder, [vim.VirtualMachine], True)
@@ -45,7 +48,7 @@ def main():
 
       get_status(ObjList)
 
-      # print(OUTPUT)
+      print(OUTPUT)
 
    except vmodl.MethodFault as e:
       print("Caught vmodl fault : " + e.msg)

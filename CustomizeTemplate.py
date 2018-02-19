@@ -1,10 +1,5 @@
 from __future__ import print_function
 
-import atexit
-import ssl
-import sys
-import time
-
 from pyVmomi import vim
 
 import Connect
@@ -12,7 +7,7 @@ import Connect
 clone_name = ""
 clone_datastore = "SAN"
 clone_resourcepool = "CB-ResPool"
-clone_template_name = ""
+clone_template = ""
 OUTPUT = []
 
 
@@ -43,10 +38,8 @@ def get_info(content, vimtype, name):
 
     return obj
 
-
 def clone_vm(content, template_name, vm_name, si, datastore_name, resource_pool, power_on):
 
-    datacenter = get_info(content, [vim.Datacenter], None)
     destfolder = get_info(content, [vim.Folder], None)
     datastore = get_info(content, [vim.Datastore], datastore_name)
     
@@ -67,9 +60,9 @@ def clone_vm(content, template_name, vm_name, si, datastore_name, resource_pool,
     storagespec.resourcePool = resource_pool
     storagespec.configSpec = vmconf
 
+
     try:
-        rec = content.storageResourceManager.RecommendDatastores(
-            storageSpec=storagespec)
+        rec = content.storageResourceManager.RecommendDatastores(storageSpec=storagespec)
         rec_action = rec.recommendations[0].action[0]
         real_datastore_name = rec_action.destination.name
     except:
@@ -85,11 +78,13 @@ def clone_vm(content, template_name, vm_name, si, datastore_name, resource_pool,
     clonespec = vim.vm.CloneSpec()
     clonespec.location = relospec
     clonespec.powerOn = power_on
+    
+    reconspec = vim.vm.ReconfigVM()
+    reconspec.numCPUs = 3
 
-    print("cloning VM...")
-    task = template_name.Clone(folder=destfolder, name=vm_name, spec=clonespec)
+    print("Request is processing. Please wait.")
+    task = template_name.Clone(folder=destfolder, name=vm_name, spec=reconspec)
     wait_for_task(task)
-
 
 def main():
     si = Connect.vSphereConnect()
@@ -97,15 +92,14 @@ def main():
 
     template = None
 
-    template = get_info(content, [vim.VirtualMachine], clone_template_name)
+    template = get_info(content, [vim.VirtualMachine], clone_template)
 
     if template:
         clone_vm(content, template, clone_name, content, clone_datastore, clone_resourcepool, True)
     else:
-        print("template not found")
-        OUTPUT.append("template not found" + clone_name + clone_template_name)
-        print(OUTPUT)
-        
+        OUTPUT.append("Template for " + clone_template + " was not found")
+        print("Template for " + clone_template + " was not found")
+    # print(OUTPUT)  
 
 if __name__ == "__main__":
     main()  

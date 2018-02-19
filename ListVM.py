@@ -1,8 +1,5 @@
 from __future__ import print_function
 
-import atexit
-import ssl
-
 import Connect
 
 OUTPUT = []
@@ -14,7 +11,7 @@ def print_vm(vm):
             VMState = "powered on"
 
       OUTPUT.append(vm.summary.config.name + " is running " + vm.summary.config.guestFullName + " and is " + VMState)
-      # print(vm.summary.config.name + " is running " + vm.summary.config.guestFullName + " and is " + VMState)
+      print(vm.summary.config.name + " is running " + vm.summary.config.guestFullName + " and is " + VMState)
 
 def main():
       si = Connect.ESXiConnect()

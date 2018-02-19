@@ -1,8 +1,6 @@
 from __future__ import print_function
 
-import atexit
 import re
-import ssl
 
 import humanize
 import pyVmomi

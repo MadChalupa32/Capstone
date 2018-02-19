@@ -1,9 +1,5 @@
 from __future__ import print_function
 
-import atexit
-import ssl
-import sys
-
 from pyVmomi import vim
 
 import Connect

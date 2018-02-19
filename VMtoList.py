@@ -1,8 +1,5 @@
 from __future__ import print_function
 
-import atexit
-import ssl
-
 import Connect
 
 VMNAMELIST=[]
@@ -22,7 +19,7 @@ def query_list(si):
 def main():
       si = Connect.ESXiConnect()
       query_list(si)
-      #print(VMNAMELIST)
+      # print(VMNAMELIST)
 
       return 0
 

@@ -1,4 +1,3 @@
-"""EnvironmentCreator.py"""
 from __future__ import print_function
 
 import logging
@@ -8,7 +7,7 @@ from flask_ask import (Ask, audio, context, delegate, question, session,
                        statement)
 
 import CloneTemplate
-import CreateVM
+import CustomizeTemplate
 import DeleteVM
 import GetDatastoreHealth
 import GetHostHealth
@@ -17,6 +16,7 @@ import ListVM
 import PowerOffVM
 import PowerOnVM
 import VMtoList
+import ListDatastore
 
 app = Flask(__name__)
 ask = Ask(app, '/')
@@ -87,6 +87,30 @@ def clone_template(Name, Template):
 #     return statement("A virtual machine named " + vm_name + " with " +  cpu_count + " CPUs " + memory_count + " gigabytes of memory and " + storage_count + " gigabytes of storage has been created")
 
 
+@ask.intent('CustomizeTemplate')
+def customize_template(Name, Template):
+    CustomizeTemplate.OUTPUT[:] = []
+
+    vm_name = Name
+    vm_template = Template
+
+    # print(vm_name)
+    # print(vm_template)
+
+    CustomizeTemplate.clone_name = vm_name
+    CustomizeTemplate.clone_template = vm_template
+    
+    dialog_state = get_dialog_state()
+    if dialog_state != "COMPLETED":
+        return delegate(speech=None)
+
+    CustomizeTemplate.main()
+    
+    output = CustomizeTemplate.OUTPUT
+    output = '. '.join(str(p) for p in output)
+    # print(output)
+
+    return statement(output).simple_card("Clone a Template", output)
 
 
 @ask.intent('DeleteVMIntent')
@@ -141,6 +165,21 @@ def host_health():
 
 
 
+@ask.intent('ListDatastoresIntent')
+def list_datastore(Name):
+    ListDatastore.OUTPUT[:] = []
+    datastore_name = Name
+
+    ListDatastore.main()
+    
+    output = ListDatastore.OUTPUT
+    output = '. '.join(str(p) for p in output)
+
+    return statement("Datastores include " + output).simple_card("Datastores include " + output)
+
+
+
+
 @ask.intent('ListOptionsIntent')
 def list_options():
     options = [
@@ -159,7 +198,7 @@ def list_options():
 
     output = '. '.join(options)
     # print(output)
-    return statement(output).simple_card("List all options", output)
+    return statement("Options include " + output).simple_card("List all options", "Options include " + output)
 
 
 

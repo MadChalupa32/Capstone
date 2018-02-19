@@ -1,8 +1,5 @@
 from __future__ import print_function
 
-import atexit
-import ssl
-
 import Connect
 
 OUTPUT = []

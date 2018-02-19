@@ -1,15 +1,12 @@
 from __future__ import print_function
 
-import atexit
-import ssl
-
 import Connect
 
 OUTPUT = []
 
 def append_vm(vm):
       OUTPUT.append(vm.summary.config.name)
-    #   print(vm.summary.config.name)
+      # print(vm.summary.config.name)
 
 def query_list(si):
       content = si.RetrieveContent()
@@ -21,12 +18,11 @@ def query_list(si):
             for vm in vm_list:
                 if(vm.summary.config.template == True):
                     append_vm(vm)
-            print(OUTPUT)
+            # print(OUTPUT)
 
 def main():
       si = Connect.vSphereConnect()
       query_list(si)
-      #print(VMNAMELIST)
 
       return 0
 
